@@ -1,2 +1,2 @@
-# Pagina_ikerl
-Mi pagina personal
+# Pagina_personal
+ primera entrega de pagina personal
