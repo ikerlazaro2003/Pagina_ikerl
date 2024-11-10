@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mis Proyectos</title>
+    <title>Añadir Proyecto</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
@@ -17,11 +17,9 @@
         .navbar-brand {
             font-weight: bold;
         }
-        .card {
-            transition: transform .3s ease;
-        }
-        .card:hover {
-            transform: scale(1.05);
+        .btn-custom {
+            background-color: #28a745;
+            color: white;
         }
         footer {
             background-color: #343a40;
@@ -48,9 +46,16 @@
     </nav>
 
     <div class="container mt-5">
-        <h1 class="my-4 text-center text-primary">Mis Proyectos</h1>
-        <div class="row">
-            <?php
+        <h1 class="my-4 text-center text-primary">Añadir Nuevo Proyecto</h1>
+
+        <!-- Mensajes de éxito o error -->
+        <?php
+        if ($_SERVER["REQUEST_METHOD"] == "POST") {
+            $title = $_POST['title'];
+            $description = $_POST['description'];
+            $image_url = $_POST['image_url'];
+            $link = $_POST['link'];
+
             // Conexión a la base de datos
             $conn = new mysqli('localhost', 'root', '', 'portfolio');
 
@@ -58,29 +63,38 @@
                 die("Conexión fallida: " . $conn->connect_error);
             }
 
-            $sql = "SELECT * FROM projects";
-            $result = $conn->query($sql);
-
-            if ($result->num_rows > 0) {
-                while ($row = $result->fetch_assoc()) {
-                    echo "<div class='col-lg-4 col-md-6 mb-4'>";
-                    echo "<div class='card shadow-sm'>";
-                    echo "<img src='" . $row["image_url"] . "' class='card-img-top' alt='Imagen del proyecto'>";
-                    echo "<div class='card-body'>";
-                    echo "<h5 class='card-title'>" . $row["title"] . "</h5>";
-                    echo "<p class='card-text'>" . $row["description"] . "</p>";
-                    echo "<a href='" . $row["link"] . "' class='btn btn-primary'>Ver Proyecto</a>";
-                    echo "</div>";
-                    echo "</div>";
-                    echo "</div>";
-                }
+            $sql = "INSERT INTO projects (title, description, image_url, link) VALUES ('$title', '$description', '$image_url', '$link')";
+            
+            if ($conn->query($sql) === TRUE) {
+                echo "<div class='alert alert-success text-center'>¡Nuevo proyecto añadido con éxito!</div>";
             } else {
-                echo "<p class='text-center'>No hay proyectos disponibles.</p>";
+                echo "<div class='alert alert-danger text-center'>Error: " . $conn->error . "</div>";
             }
 
             $conn->close();
-            ?>
-        </div>
+        }
+        ?>
+
+        <!-- Formulario para añadir proyectos -->
+        <form action="add_project.php" method="POST">
+            <div class="form-group mb-4">
+                <label for="title">Título del Proyecto</label>
+                <input type="text" class="form-control" id="title" name="title" required>
+            </div>
+            <div class="form-group mb-4">
+                <label for="description">Descripción</label>
+                <textarea class="form-control" id="description" name="description" rows="4" required></textarea>
+            </div>
+            <div class="form-group mb-4">
+                <label for="image_url">URL de la Imagen</label>
+                <input type="text" class="form-control" id="image_url" name="image_url" required>
+            </div>
+            <div class="form-group mb-4">
+                <label for="link">Enlace del Proyecto</label>
+                <input type="url" class="form-control" id="link" name="link" required>
+            </div>
+            <button type="submit" class="btn btn-custom btn-block">Añadir Proyecto</button>
+        </form>
     </div>
 
     <!-- Footer -->
@@ -90,4 +104,8 @@
         </div>
     </footer>
 
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.min.js"></script>
+</body>
+</html>
+
